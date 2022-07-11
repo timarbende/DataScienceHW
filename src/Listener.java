@@ -6,5 +6,5 @@ public interface Listener {
 	public void OnCharacteristicMatrixGenerated();
 	
 	public void OnCalculationProgress(int progress);
-	public void OnHighestSimilaritiesComputed(ArrayList<SimilarityDataHolder> highestSimilarities);
+	public void OnSimilarPairsComputed(ArrayList<SimilarityDataHolder> similarPairs);
 }

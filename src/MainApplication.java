@@ -191,6 +191,8 @@ public class MainApplication implements Listener{
 				List<String> selectedValues = listBags.getSelectedValuesList();
 				taShinglesFirst.setText("");
 				taShinglesSecond.setText("");
+				lbEstimateValue.setText("");
+				lbExactValue.setText("");
 				
 				if(selectedValues.size() > 2 || selectedValues.size() == 0) {
 					listBags.clearSelection();
@@ -207,7 +209,7 @@ public class MainApplication implements Listener{
 					secondShinglesText = secondShinglesText.substring(1, secondShinglesText.length() - 1);
 					taShinglesSecond.setText(secondShinglesText);
 
-					lbEstimateValue.setText(controller.estimateSimilarity(selectedFirst, selectedSecond).toString());
+					lbEstimateValue.setText(controller.concludeSimilarity(selectedFirst, selectedSecond) ? "similar" : "not similar");
 					lbExactValue.setText(controller.computeExactSimilarity(selectedFirst, selectedSecond).toString());
 				}
 			}
@@ -245,7 +247,7 @@ public class MainApplication implements Listener{
 		frame.getContentPane().add(panelDetails, BorderLayout.CENTER);
 		
 		panelStats = new JPanel();
-		lbEstimateText = new JLabel("Estimated similarity based on LSH: ");
+		lbEstimateText = new JLabel("Based on LSH this pair is ");
 		panelStats.add(lbEstimateText);
 		
 		lbEstimateValue = new JLabel("  ");
@@ -279,14 +281,14 @@ public class MainApplication implements Listener{
 		});
 		mnEstimateFeatures.add(mntmMaxEstimate);
 		
-		mntmHighestEstimates = new JMenuItem("Generate pairs with the highest estimated similarities...");
+		mntmHighestEstimates = new JMenuItem("Generate similar pairs based on estimations from LSH...");
 		mntmHighestEstimates.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JDialog countDialog = new JDialog(frame, "How many?");
 				JPanel dPanel = new JPanel();
 				countDialog.setBounds(frame.getBounds().x + frame.getBounds().width / 2, frame.getBounds().y + frame.getBounds().height / 2, 300, 200);
 				
-				dPanel.add(new JLabel("How many estimates should we compute?"));
+				dPanel.add(new JLabel("How many pairs should we compute?"));
 				
 				tfEstimatesCount = new JTextField();
 				tfEstimatesCount.setPreferredSize(new Dimension(100, tfEstimatesCount.getPreferredSize().height));
@@ -297,7 +299,7 @@ public class MainApplication implements Listener{
 					public void actionPerformed(ActionEvent e) {
 						controller.similaritiesCount = Integer.parseInt(tfEstimatesCount.getText());
 						
-						JDialog dialog = generateDialog("Computing the highest estimates", "Computing the highest " + controller.similaritiesCount + " estimated Jaccard similarity");
+						JDialog dialog = generateDialog("Computing estimated pairs", "Computing " + controller.similaritiesCount + " estimate pairs");
 			            dialog.setVisible(true);
 			            
 			            controller.threadMode = 2;
@@ -443,7 +445,7 @@ public class MainApplication implements Listener{
 	}
 
 	@Override
-	public void OnHighestSimilaritiesComputed(ArrayList<SimilarityDataHolder> highestEstimates) {
+	public void OnSimilarPairsComputed(ArrayList<SimilarityDataHolder> highestEstimates) {
 		StringBuilder builder = new StringBuilder();
 		if(highestEstimates.size() == 1)
 			builder.append("Highest similarity:\n");
